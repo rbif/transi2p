@@ -71,7 +71,7 @@ user@cloud1:~$
 # Installation
 
 ```
-pip install twisted txi2p
+pip install transi2p
 sudo ./rules.sh
 twistd transi2p -c config.json
 ```
