@@ -24,6 +24,10 @@ class TransServiceMaker(object):
 
         try:
             config = json.load(open(path))
+            _resolvers = []
+            for resolver in config['resolvers']:
+                _resolvers.append(tuple(resolver))
+            config['resolvers'] = _resolvers
         except IOError:
             with open(path, 'w') as f:
                 config = {
@@ -46,7 +50,9 @@ class TransServiceMaker(object):
         trans_port = protocol.ServerFactory()
         trans_port.protocol = transi2p.TransPort
 
-        print('listening on transparent: {}:{}'.format(config['listen'], config['trans_port']))
+        print('listening on transparent: {}:{}'.format(config['listen'],
+            config['trans_port']))
+
         internet.TCPServer(config['trans_port'], trans_port,
             interface=config['listen']).setServiceParent(i2pservice)
 
