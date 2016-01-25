@@ -1,4 +1,72 @@
+Provides address mapping and transparent proxying for i2p, Tor, and clearnet.
+
+# Running
+
+Installation and testing:
+
+```
+pip install transi2p
+twistd -n transi2p
+```
+
+Running as a service:
+
+```
+sudo ./rules.sh
+sudo iptables-save > /etc/iptables/iptables.rules
+sudo mkdir /etc/transi2p
+sudo cp config.json /etc/transi2p/config.json
+sudo useradd -m -s /usr/sbin/nologin -d /var/lib/transi2p transi2p
+sudo -u transi2p twistd -d /var/lib/transi2p --pidfile=/var/lib/transi2p/twistd.pid --logfile /dev/null transi2p -c /etc/transi2p/config.json 
+```
+
+# Tor setup
+
+Optionally, configure transparent proxying in your Tor daemon:
+
+```
+DNSPort 5353
+VirtualAddrNetworkIPv4 10.192.0.0/16
+AutomapHostsOnResolve 1
+TransPort 9040
+```
+
+Otherwise, change your resolver to use a clearnet resolver (or none at all for i2p-only!).
+
+# SAM port configuration
+
+Go here and enable the SAM port: http://127.0.0.1:7657/configclients
+
+# Mappings
+
+To configure static mappings, set the default_mappings dictionary in config.json to the mappings that you need:
+
+```
+{
+    "addr_map": "10.18.0.0",
+    "default_mappings": {
+        "1.1.1.1": "stats.i2p",
+        "stats.i2p": "1.1.1.1"
+    },
+    "dns_port": 5354,
+    "listen": "127.0.0.1",
+    "resolvers": [
+        [
+            "8.8.8.8",
+            53
+        ]
+    ],
+    "trans_port": 7679
+}
+```
+
+Static maps are great for whitelisting services, e.g. you could only allow access to 1.1.1.1 preventing access to any other sites, i2p, tor, clearnet, or otherwise.
+
+Combine with whonix and qubes for best results. :)
+
 # Example
+
+Experience luxury!
 
 ```
 user@cloud1:~$ curl http://stats.i2p/ -svo /dev/null
@@ -67,24 +135,3 @@ user@cloud1:~$ curl http://3g2upl4pq6kufc4m.onion/ -svo /dev/null
 * Connection #0 to host 3g2upl4pq6kufc4m.onion left intact
 user@cloud1:~$ 
 ```
-
-# Installation
-
-```
-pip install transi2p
-sudo ./rules.sh
-twistd transi2p -c config.json
-```
-
-# Tor setup
-
-```
-DNSPort 5353
-VirtualAddrNetworkIPv4 10.192.0.0/16
-AutomapHostsOnResolve 1
-TransPort 9040
-```
-
-# SAM port configuration
-
-Go here and enable the SAM port: http://127.0.0.1:7657/configclients

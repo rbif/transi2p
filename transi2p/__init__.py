@@ -3,23 +3,35 @@ from twisted.internet.endpoints import clientFromString, connectProtocol
 from twisted.names import dns, error
 import socket
 import struct
+import re
 
+ip_re = re.compile(r'^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$')
 socket.SO_ORIGINAL_DST = 80
 
 class AddressMap(object):
-    def __init__(self, addr_map):
+    def __init__(self, addr_map, default_mappings):
         self.base_addr = struct.unpack('>I', socket.inet_aton(addr_map))[0]
         self.addr_index = 0
 
         self.names = {}
         self.addresses = {}
 
+        for addr in default_mappings:
+            if ip_re.match(addr):
+                self.names[default_mappings[addr]] = addr
+                self.addresses[addr] = default_mappings[addr]
+            else:
+                self.names[addr] = default_mappings[addr]
+                self.addresses[default_mappings[addr]] = addr
+
     def map(self, name):
         if name in self.names:
             return self.names[name]
         else:
-            self.addr_index += 1
-            addr = socket.inet_ntoa(struct.pack('>I', self.base_addr + self.addr_index))
+            addr = None
+            while not addr or addr in self.addresses:
+                self.addr_index += 1
+                addr = socket.inet_ntoa(struct.pack('>I', self.base_addr + self.addr_index))
 
             self.names[name] = addr
             self.addresses[addr] = name

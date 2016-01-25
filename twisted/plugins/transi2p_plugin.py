@@ -35,7 +35,8 @@ class TransServiceMaker(object):
                     'dns_port': 5354,
                     'trans_port': 7679,
                     'listen': '127.0.0.1',
-                    'resolvers': [ ('127.0.0.1', 5353) ]
+                    'resolvers': [ ('127.0.0.1', 5353) ],
+                    'default_mappings': { '1.1.1.1': 'stats.i2p', 'example.i2p': '1.1.1.1'}
                 }
 
                 json.dump(config, f)
@@ -43,7 +44,11 @@ class TransServiceMaker(object):
             print('Invalid JSON configuration. RM and try again?')
             quit()
 
-        transi2p.address_map = transi2p.AddressMap(config['addr_map'])
+        if 'default_mappings' not in config:
+            config['default_mappings'] = {}
+
+        transi2p.address_map = transi2p.AddressMap(config['addr_map'],
+            config['default_mappings'])
 
         i2pservice = service.MultiService()
 
