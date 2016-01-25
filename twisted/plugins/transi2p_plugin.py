@@ -29,7 +29,7 @@ class TransServiceMaker(object):
                 _resolvers.append(tuple(resolver))
             config['resolvers'] = _resolvers
         except IOError:
-            print('Writing default config to {}.'.path(path))
+            print('Writing default config to {}.'.format(path))
 
             with open(path, 'w') as f:
                 config = {
