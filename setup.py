@@ -37,7 +37,7 @@ else:
 
 setup(
     name='transi2p',
-    version='1.2',
+    version='1.2.1',
     description="Transparent proxy for i2p.",
     url="https://github.com/rbif/transi2p/",
     author="Arnold French",
