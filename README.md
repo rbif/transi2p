@@ -45,8 +45,7 @@ To configure static mappings, set the default_mappings dictionary in config.json
 {
     "addr_map": "10.18.0.0",
     "default_mappings": {
-        "1.1.1.1": "stats.i2p",
-        "stats.i2p": "1.1.1.1"
+        "10.18.0.1": "stats.i2p"
     },
     "dns_port": 5354,
     "listen": "127.0.0.1",
