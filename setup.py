@@ -37,10 +37,9 @@ else:
 
 setup(
     name='transi2p',
-    version='1.1',
+    version='1.1.1',
     description="Transparent proxy for i2p.",
     url="https://github.com/rbif/transi2p/",
-    download_url='https://github.com/rbif/transi2p/tarball/1.1',
     author="Arnold French",
     author_email="arnold.french1974@yandex.com",
     packages=['transi2p', 'twisted.plugins'],
