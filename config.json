@@ -1,1 +1,1 @@
-{"dns_port": 5354, "trans_port": 7679, "addr_map": "10.18.0.0"}
+{"resolvers": [["127.0.0.1", 5353]], "dns_port": 5354, "trans_port": 7679, "addr_map": "10.18.0.0", "listen": "127.0.0.1"}

@@ -73,7 +73,7 @@ user@cloud1:~$
 ```
 pip install twisted txi2p
 sudo ./rules.sh
-./i2ptrans.py
+twistd transi2p -c config.json
 ```
 
 # Tor setup

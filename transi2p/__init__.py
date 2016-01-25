@@ -1,31 +1,14 @@
 from twisted.internet import protocol, reactor, defer
 from twisted.internet.endpoints import clientFromString, connectProtocol
-from twisted.names import dns, server, client, error
+from twisted.names import dns, error
 import socket
 import struct
-import json
-from txi2p.bob.endpoints import BOBI2PClientEndpoint
 
 socket.SO_ORIGINAL_DST = 80
 
-try:
-    config = json.load(open('config.json'))
-except IOError:
-    with open('config.json', 'w') as f:
-        config = {
-            'addr_map': '10.18.0.0',
-            'dns_port': 5354,
-            'trans_port': 7679
-        }
-
-        json.dump(config, f)
-except ValueError:
-    print('Invalid JSON configuration. RM and try again?')
-    quit()
-
 class AddressMap(object):
-    def __init__(self):
-        self.base_addr = struct.unpack('>I', socket.inet_aton(config['addr_map']))[0]
+    def __init__(self, addr_map):
+        self.base_addr = struct.unpack('>I', socket.inet_aton(addr_map))[0]
         self.addr_index = 0
 
         self.names = {}
@@ -82,11 +65,10 @@ class TransPort(protocol.Protocol):
         _, self.dst_port, self.dst_addr, _ = struct.unpack('>HH4s8s', addr)
         self.dst_addr = socket.inet_ntoa(self.dst_addr)
 
-        print(self.dst_addr, self.dst_port)
         name = address_map.get_name(self.dst_addr)
         if not name:
             # tear it down
-            pass
+            return
 
         endpoint = clientFromString(reactor, 'i2p:' + name)
         connectProtocol(endpoint, EepConnection(self)).addCallback(self.i2p_connected)
@@ -107,12 +89,4 @@ class TransPort(protocol.Protocol):
         if self.pending:
             self.i2p.transport.write(self.pending)
 
-address_map = AddressMap()
-trans_port = protocol.ServerFactory()
-trans_port.protocol = TransPort
-
-ns = server.DNSServerFactory(clients=[EepNS(), client.Resolver(servers=[('127.0.0.1', 5353)])])
-reactor.listenUDP(config['dns_port'], dns.DNSDatagramProtocol(controller=ns))
-reactor.listenTCP(config['trans_port'], trans_port)
-print('listening on {}')
-reactor.run()
+address_map = None
