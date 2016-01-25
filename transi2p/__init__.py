@@ -17,12 +17,15 @@ class AddressMap(object):
         self.addresses = {}
 
         for addr in default_mappings:
+            name = str(default_mappings[addr])
+            addr = str(addr)
+
             if ip_re.match(addr):
-                self.names[default_mappings[addr]] = addr
-                self.addresses[addr] = default_mappings[addr]
+                self.names[name] = addr
+                self.addresses[addr] = name
             else:
-                self.names[addr] = default_mappings[addr]
-                self.addresses[default_mappings[addr]] = addr
+                self.names[addr] = name
+                self.addresses[name] = addr
 
     def map(self, name):
         if name in self.names:

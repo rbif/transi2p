@@ -29,6 +29,8 @@ class TransServiceMaker(object):
                 _resolvers.append(tuple(resolver))
             config['resolvers'] = _resolvers
         except IOError:
+            print('Writing default config to {}.'.path(path))
+
             with open(path, 'w') as f:
                 config = {
                     'addr_map': '10.18.0.0',
@@ -36,7 +38,7 @@ class TransServiceMaker(object):
                     'trans_port': 7679,
                     'listen': '127.0.0.1',
                     'resolvers': [ ('127.0.0.1', 5353) ],
-                    'default_mappings': { '1.1.1.1': 'stats.i2p', 'example.i2p': '1.1.1.1'}
+                    'default_mappings': { '1.1.1.1': 'stats.i2p' }
                 }
 
                 json.dump(config, f)
