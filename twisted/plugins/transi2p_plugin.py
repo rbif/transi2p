@@ -11,7 +11,7 @@ from twisted.application.service import IServiceMaker
 
 
 class Options(usage.Options):
-    optParameters = [ ['config', 'p', 'config.json', 'Path to config file'] ]
+    optParameters = [ ['config', 'c', 'config.json', 'Path to config file'] ]
 
 class TransServiceMaker(object):
     implements(IServiceMaker, IPlugin)

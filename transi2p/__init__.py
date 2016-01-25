@@ -52,8 +52,7 @@ class EepConnection(protocol.Protocol):
         self.proxy.transport.write(data)
 
     def connectionLost(self, reason):
-        # clean up
-        print(reason)
+        self.proxy.i2p_error(reason)
 
 class TransPort(protocol.Protocol):
     def connectionMade(self):
@@ -67,11 +66,13 @@ class TransPort(protocol.Protocol):
 
         name = address_map.get_name(self.dst_addr)
         if not name:
-            # tear it down
+            self.transport.loseConnection()
             return
 
         endpoint = clientFromString(reactor, 'i2p:' + name)
-        connectProtocol(endpoint, EepConnection(self)).addCallback(self.i2p_connected)
+        connection = connectProtocol(endpoint, EepConnection(self))
+        connection.addCallback(self.i2p_connected)
+        connection.addErrback(self.i2p_error)
 
     def dataReceived(self, data):
         if self.i2p:
@@ -80,8 +81,11 @@ class TransPort(protocol.Protocol):
             self.pending += data
 
     def connectionLost(self, reason):
-        # clean up
-        print(reason)
+        if self.i2p:
+            self.i2p.transport.loseConnection()    
+
+    def i2p_error(self, reason):
+        self.transport.loseConnection()
 
     def i2p_connected(self, i2p):
         self.i2p = i2p
